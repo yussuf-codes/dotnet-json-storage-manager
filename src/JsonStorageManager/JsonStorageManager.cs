@@ -6,19 +6,17 @@ namespace JsonStorageManager;
 
 public class JsonStorageManager<T>(string jsonFilePath)
 {
-    public List<T>? Read()
+    public T? Read()
     {
         using StreamReader reader = new StreamReader(jsonFilePath);
         string jsonStringified = reader.ReadToEnd();
-        List<T>? jsonDeserialized = JsonSerializer.Deserialize<List<T>>(jsonStringified);
-        return jsonDeserialized;
+        return JsonSerializer.Deserialize<T>(jsonStringified);
     }
 
-    public void Write(List<T> objects)
+    public void Write(T obj)
     {
         using StreamWriter writer = new StreamWriter(jsonFilePath);
-        JsonSerializerOptions serializerOptions = new JsonSerializerOptions { WriteIndented = true };
-        string jsonStringified = JsonSerializer.Serialize(objects, serializerOptions);
-        writer.Write(jsonStringified);
+        JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = true };
+        writer.Write(JsonSerializer.Serialize(obj, jsonSerializerOptions));
     }
 }
