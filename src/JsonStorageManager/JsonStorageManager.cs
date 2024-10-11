@@ -1,22 +1,30 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 
 namespace JsonStorageManager;
 
-public class JsonStorageManager<T>(string jsonFilePath)
+public class JsonStorageManager<T>
 {
+    private readonly string _jsonFilePath;
+
+    public JsonStorageManager(string jsonFilePath)
+    {
+        _jsonFilePath = jsonFilePath;
+    }
+
     public T? Read()
     {
-        using StreamReader reader = new StreamReader(jsonFilePath);
-        string jsonStringified = reader.ReadToEnd();
-        return JsonSerializer.Deserialize<T>(jsonStringified);
+        using StreamReader reader = new StreamReader(_jsonFilePath);
+        string jsonString = reader.ReadToEnd();
+        T? obj = JsonSerializer.Deserialize<T>(jsonString);
+        return obj;
     }
 
     public void Write(T obj)
     {
-        using StreamWriter writer = new StreamWriter(jsonFilePath);
-        JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = true };
-        writer.Write(JsonSerializer.Serialize(obj, jsonSerializerOptions));
+        JsonSerializerOptions serializerOptions = new JsonSerializerOptions() { WriteIndented = true };
+        string jsonString = JsonSerializer.Serialize(obj, serializerOptions);
+        using StreamWriter writer = new StreamWriter(_jsonFilePath);
+        writer.Write(jsonString);
     }
 }
